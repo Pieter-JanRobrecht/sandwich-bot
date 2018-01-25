@@ -19,7 +19,7 @@ public class SlackBot extends Bot {
     private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
 
     @Value("${slackBotToken}")
-    private String slackToken;
+    private String slackToken = System.getenv("SLACK_API_KEY");
 
     @Override
     public String getSlackToken() {
