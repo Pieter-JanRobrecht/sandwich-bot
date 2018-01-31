@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 @EntityScan("be.pj.sandwichbot.model")
-//@EnableJpaRepositories(basePackages = "be.pj.sandwichbot.repositories")
 @SpringBootApplication(scanBasePackages = {"me.ramswaroop.jbot", "be.pj.sandwichbot"})
 public class SandwichApplication {
   public static void main(String[] args) {
