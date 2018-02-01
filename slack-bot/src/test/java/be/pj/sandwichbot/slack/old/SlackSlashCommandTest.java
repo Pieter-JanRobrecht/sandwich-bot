@@ -1,5 +1,6 @@
-package be.pj.sandwichbot.slack;
+package be.pj.sandwichbot.slack.old;
 
+import be.pj.sandwichbot.slack.SlackSlashCommand;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

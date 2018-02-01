@@ -1,4 +1,4 @@
-package be.pj.sandwichbot.slack;
+package be.pj.sandwichbot.slack.old;
 
 
 import me.ramswaroop.jbot.core.slack.Bot;

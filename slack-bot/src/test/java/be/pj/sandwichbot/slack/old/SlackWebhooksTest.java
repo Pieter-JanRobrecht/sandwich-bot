@@ -1,4 +1,4 @@
-package be.pj.sandwichbot.slack;
+package be.pj.sandwichbot.slack.old;
 
 import org.junit.Ignore;
 import org.junit.runner.RunWith;

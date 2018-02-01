@@ -41,6 +41,8 @@ public class SlackBot extends Bot {
 
   @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = ".*list.*")
   public void onReceiveDM(WebSocketSession session, Event event) {
+    logger.info("User is asking for list");
     reply(session, event, new Message("Hi, I am " + slackService.getCurrentUser().getName()));
+    logger.info("Returned list to user");
   }
 }
