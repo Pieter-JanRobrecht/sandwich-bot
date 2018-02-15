@@ -2,10 +2,12 @@ package be.pj.sandwichbot.slack.test;
 
 import be.pj.sandwichbot.model.Sandwich;
 import be.pj.sandwichbot.services.SandwichService;
+import be.pj.sandwichbot.services.SlackUserService;
 import be.pj.sandwichbot.slack.SlackBot;
 import be.pj.sandwichbot.slack.SlackMessage;
 import be.pj.sandwichbot.slack.builders.SandwichBuilder;
 import be.pj.sandwichbot.slack.builders.SlackMessageBuilder;
+import be.pj.sandwichbot.slack.builders.SlackUserModelBuilder;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +17,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.socket.WebSocketSession;
 
 import static org.fest.assertions.api.Assertions.assertThat;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -30,6 +33,9 @@ public class SlackBotTest extends AbstractBotTest {
 
   @Autowired
   private SandwichService sandwichService;
+
+  @Autowired
+  private SlackUserService userService;
 
   @Autowired
   private WebSocketSession session;
@@ -49,12 +55,14 @@ public class SlackBotTest extends AbstractBotTest {
 
   @Test
   public void simpleConversationTest() throws Exception {
+    when(userService.findUser(anyString())).thenReturn(new SlackUserModelBuilder().userId("UBADGH18S").name("PJ").build());
+
     SlackMessage slackMessage = new SlackMessageBuilder()
             .directMentionSlackBot("order")
             .build();
 
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Going to next step in conversation");
+    assertThat(capture.toString()).isNotNull().contains("Asked user");
 
     SlackMessage slackMessage1 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -63,7 +71,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
+    assertThat(capture.toString()).isNotNull().contains("sandwich");
 
     SlackMessage slackMessage2 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -82,7 +90,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Going to next step in conversation");
+    assertThat(capture.toString()).isNotNull().contains("Asked user");
 
     SlackMessage badMessage = new SlackMessageBuilder()
             .toRandomChannel()
@@ -100,7 +108,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
+    assertThat(capture.toString()).isNotNull().contains("sandwich");
 
     SlackMessage slackMessage2 = new SlackMessageBuilder()
             .toRandomChannel()
