@@ -37,7 +37,7 @@ public class SlackBotTest extends AbstractBotTest {
   private WebSocketSession session;
 
   @Test
-  public void simpleSlackBotTest() throws Exception {
+  public void ifAskingForListReturnEverything() throws Exception {
     when(sandwichRepository.findAll()).thenReturn(Collections.singletonList(SANDWICH));
 
     SlackMessage slackMessage = new SlackMessageBuilder()
@@ -46,7 +46,43 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains(SANDWICH.toString());
+    assertThat(capture.toString()).isNotNull().contains(SANDWICH.toPrettyFormat());
+  }
+
+  @Test
+  public void simpleConversationTest() throws Exception {
+    SlackMessage slackMessage = new SlackMessageBuilder()
+            .directMentionSlackBot("order")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to next step in conversation");
+
+    SlackMessage badMessage = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byRandomUser()
+            .payload("soup")
+            .build();
+
+//    slackBot.handleTextMessage(session, badMessage.convertToTextMessage());
+//    assertThat(capture.toString()).isNotNull().doesNotContain("soup");
+
+    SlackMessage slackMessage1 = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("sandwich")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
+
+    SlackMessage slackMessage2 = new SlackMessageBuilder()
+            .toRandomChannel()
+            .payload("thanks")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage2.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("stopping conversation");
   }
 }
 

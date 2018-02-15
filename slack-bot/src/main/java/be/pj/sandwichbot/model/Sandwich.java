@@ -47,4 +47,9 @@ public class Sandwich {
             ", contents='" + contents + '\'' +
             '}';
   }
+
+  public String toPrettyFormat(){
+    return "Sandwich " + name + " | Contents " + contents;
+  }
+
 }
