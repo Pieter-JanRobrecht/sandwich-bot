@@ -1,6 +1,6 @@
 package be.pj.sandwichbot.slack;
 
-import be.pj.sandwichbot.model.SandwichModel;
+import be.pj.sandwichbot.model.Sandwich;
 import be.pj.sandwichbot.repositories.SandwichRepository;
 import be.pj.sandwichbot.repositories.SlackUserRepository;
 import me.ramswaroop.jbot.core.slack.Bot;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
-import java.util.List;
 import java.util.regex.Matcher;
 
 @Component
@@ -49,15 +48,15 @@ public class SlackBot extends Bot {
   public void onReceiveDM(WebSocketSession session, Event event) {
     logger.info("User is asking for list of sandwiches");
 
-    Iterable<SandwichModel> sandwiches = sandwichRepository.findAll();
+    Iterable<Sandwich> sandwiches = sandwichRepository.findAll();
     StringBuilder message = new StringBuilder("");
 
-    for (SandwichModel sandwich : sandwiches) {
+    for (Sandwich sandwich : sandwiches) {
       message.append(sandwich.toString());
       message.append("\n");
     }
 
     reply(session, event, new Message(message.toString()));
-    logger.info("Returned list of sandwiches to user");
+    logger.info("Returned list in message:" + message);
   }
 }

@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "sandwich")
-public class SandwichModel {
+public class Sandwich {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
@@ -41,7 +41,7 @@ public class SandwichModel {
 
   @Override
   public String toString() {
-    return "SandwichModel{" +
+    return "Sandwich{" +
             "id=" + id +
             ", name='" + name + '\'' +
             ", contents='" + contents + '\'' +

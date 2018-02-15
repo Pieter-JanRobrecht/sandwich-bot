@@ -8,13 +8,20 @@ import me.ramswaroop.jbot.core.slack.SlackService;
 import org.mockito.Mockito;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.socket.WebSocketSession;
 
 @SpringBootConfiguration
 public class SlackBotConfiguration {
 
   @Bean
+  public WebSocketSession webSocketSession(){
+    return Mockito.mock(WebSocketSession.class);
+  }
+
+  @Bean
   public SlackBot slackBot() {
-    return Mockito.spy(SlackBot.class);
+    SlackBot bot = new SlackBot();
+    return Mockito.spy(bot);
   }
 
   @Bean
