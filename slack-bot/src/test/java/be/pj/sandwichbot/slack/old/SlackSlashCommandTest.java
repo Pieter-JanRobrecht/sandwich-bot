@@ -22,7 +22,7 @@ public class SlackSlashCommandTest {
 
     @Test
     public void onReceiveSlashCommand_When_IncorrectToken_Should_ReturnSorryRichMessage() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/slash-command?" +
+        mvc.perform(MockMvcRequestBuilders.post("/sandwich?" +
                         "token={token}&" +
                         "team_id={team_id}&" +
                         "team_domain={team_domain}&" +

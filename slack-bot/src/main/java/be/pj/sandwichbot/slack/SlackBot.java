@@ -11,6 +11,7 @@ import me.ramswaroop.jbot.core.slack.models.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -21,7 +22,8 @@ public class SlackBot extends Bot {
 
   private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
 
-  private String slackToken = System.getenv("SLACK_API_KEY");
+  @Value("${slackApiKey}")
+  private String slackToken;
 
   @Autowired
   private SlackUserRepository slackUserRepository;
