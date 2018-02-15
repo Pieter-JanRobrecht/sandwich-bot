@@ -1,5 +1,7 @@
 package be.pj.sandwichbot.slack;
 
+import be.pj.sandwichbot.model.Sandwich;
+import be.pj.sandwichbot.repositories.SandwichRepository;
 import be.pj.sandwichbot.repositories.SlackUserRepository;
 import me.ramswaroop.jbot.core.slack.Bot;
 import me.ramswaroop.jbot.core.slack.Controller;
@@ -9,6 +11,7 @@ import me.ramswaroop.jbot.core.slack.models.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -19,10 +22,14 @@ public class SlackBot extends Bot {
 
   private static final Logger logger = LoggerFactory.getLogger(SlackBot.class);
 
-  private String slackToken = System.getenv("SLACK_API_KEY");
+  @Value("${slackApiKey}")
+  private String slackToken;
 
   @Autowired
   private SlackUserRepository slackUserRepository;
+
+  @Autowired
+  private SandwichRepository sandwichRepository;
 
   @Override
   public String getSlackToken() {
@@ -41,6 +48,17 @@ public class SlackBot extends Bot {
 
   @Controller(events = {EventType.DIRECT_MENTION, EventType.DIRECT_MESSAGE}, pattern = ".*list.*")
   public void onReceiveDM(WebSocketSession session, Event event) {
-    reply(session, event, new Message("Hi, I am " + slackService.getCurrentUser().getName()));
+    logger.info("User is asking for list of sandwiches");
+
+    Iterable<Sandwich> sandwiches = sandwichRepository.findAll();
+    StringBuilder message = new StringBuilder("");
+
+    for (Sandwich sandwich : sandwiches) {
+      message.append(sandwich.toString());
+      message.append("\n");
+    }
+
+    reply(session, event, new Message(message.toString()));
+    logger.info("Returned list in message:" + message);
   }
 }
