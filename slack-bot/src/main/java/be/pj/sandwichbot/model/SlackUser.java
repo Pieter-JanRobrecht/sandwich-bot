@@ -4,22 +4,21 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "slack_user")
-public class SlackUserModel {
+public class SlackUser {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Integer id;
+  private String userId;
 
   private String name;
 
   private String email;
 
-  public Integer getId() {
-    return id;
+  public String getUserId() {
+    return userId;
   }
 
-  public void setId(Integer id) {
-    this.id = id;
+  public void setUserId(String userId) {
+    this.userId = userId;
   }
 
   public String getName() {

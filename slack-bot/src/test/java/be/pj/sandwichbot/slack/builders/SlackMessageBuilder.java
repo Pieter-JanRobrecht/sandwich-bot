@@ -7,7 +7,12 @@ import java.time.Instant;
 public class SlackMessageBuilder {
 
   private static String SLACK_BOT_ID = "UEADGH12S";
+  private static String DEFAULT_USER = "UBADGH18S";
+  private static String RANDOM_USER = "UEADGH18S";
+  private static String DIRECT_MENTION_SLACK_BOT = "<@" + SLACK_BOT_ID + ">:";
   private static String SLACK_BOT_DM_CHANNEL = "D1E79BACV";
+  private static String NORMAL_DM_CHANNEL = "C0NDSV5B8";
+  private static String RANDOM_CHANNEL = "A1E78BACV";
 
   private SlackMessage message;
 
@@ -50,10 +55,31 @@ public class SlackMessageBuilder {
   }
 
   public SlackMessageBuilder toSlackBot() {
-    return new SlackMessageBuilder()
-            .type("message")
-            .user(SLACK_BOT_ID)
+    return this.type("message")
+            .user(DEFAULT_USER)
             .channel(SLACK_BOT_DM_CHANNEL)
             .timestamp(Instant.now().toEpochMilli()+"");
+  }
+
+  public SlackMessageBuilder directMentionSlackBot(String payload) {
+    return this.type("message")
+            .user(DEFAULT_USER)
+            .channel(RANDOM_CHANNEL)
+            .timestamp(Instant.now().toEpochMilli() + "")
+            .payload(DIRECT_MENTION_SLACK_BOT + payload);
+  }
+
+  public SlackMessageBuilder toRandomChannel() {
+    return this.type("message")
+            .channel(RANDOM_CHANNEL)
+            .timestamp(Instant.now().toEpochMilli() + "");
+  }
+
+  public SlackMessageBuilder byDefaultUser() {
+    return this.user(DEFAULT_USER);
+  }
+
+  public SlackMessageBuilder byRandomUser() {
+    return this.user(RANDOM_USER);
   }
 }
