@@ -1,7 +1,7 @@
 package be.pj.sandwichbot.slack.test;
 
 import be.pj.sandwichbot.model.Sandwich;
-import be.pj.sandwichbot.repositories.SandwichRepository;
+import be.pj.sandwichbot.services.SandwichService;
 import be.pj.sandwichbot.slack.SlackBot;
 import be.pj.sandwichbot.slack.SlackMessage;
 import be.pj.sandwichbot.slack.builders.SandwichBuilder;
@@ -13,8 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.socket.WebSocketSession;
-
-import java.util.Collections;
 
 import static org.fest.assertions.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -31,14 +29,14 @@ public class SlackBotTest extends AbstractBotTest {
   private SlackBot slackBot;
 
   @Autowired
-  private SandwichRepository sandwichRepository;
+  private SandwichService sandwichService;
 
   @Autowired
   private WebSocketSession session;
 
   @Test
   public void ifAskingForListReturnEverything() throws Exception {
-    when(sandwichRepository.findAll()).thenReturn(Collections.singletonList(SANDWICH));
+    when(sandwichService.findAllSandwiches()).thenReturn(SANDWICH.toPrettyFormat());
 
     SlackMessage slackMessage = new SlackMessageBuilder()
             .toSlackBot()
@@ -58,14 +56,42 @@ public class SlackBotTest extends AbstractBotTest {
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
     assertThat(capture.toString()).isNotNull().contains("Going to next step in conversation");
 
+    SlackMessage slackMessage1 = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("sandwich")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
+
+    SlackMessage slackMessage2 = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("thanks")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage2.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("stopping conversation");
+  }
+
+  @Test
+  public void conversationWithSomeoneInterrupting() throws Exception {
+    SlackMessage slackMessage = new SlackMessageBuilder()
+            .directMentionSlackBot("order")
+            .build();
+
+    slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to next step in conversation");
+
     SlackMessage badMessage = new SlackMessageBuilder()
             .toRandomChannel()
             .byRandomUser()
             .payload("soup")
             .build();
 
-//    slackBot.handleTextMessage(session, badMessage.convertToTextMessage());
-//    assertThat(capture.toString()).isNotNull().doesNotContain("soup");
+    slackBot.handleTextMessage(session, badMessage.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().doesNotContain("soup");
 
     SlackMessage slackMessage1 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -78,6 +104,7 @@ public class SlackBotTest extends AbstractBotTest {
 
     SlackMessage slackMessage2 = new SlackMessageBuilder()
             .toRandomChannel()
+            .byDefaultUser()
             .payload("thanks")
             .build();
 

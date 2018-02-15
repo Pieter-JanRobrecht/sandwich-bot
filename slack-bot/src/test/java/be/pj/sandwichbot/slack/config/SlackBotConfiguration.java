@@ -2,6 +2,7 @@ package be.pj.sandwichbot.slack.config;
 
 import be.pj.sandwichbot.repositories.SandwichRepository;
 import be.pj.sandwichbot.repositories.SlackUserRepository;
+import be.pj.sandwichbot.services.SandwichService;
 import be.pj.sandwichbot.slack.SlackBot;
 import me.ramswaroop.jbot.core.slack.SlackDao;
 import me.ramswaroop.jbot.core.slack.SlackService;
@@ -22,6 +23,11 @@ public class SlackBotConfiguration {
   public SlackBot slackBot() {
     SlackBot bot = new SlackBot();
     return Mockito.spy(bot);
+  }
+
+  @Bean
+  public SandwichService sandwichService(){
+    return Mockito.mock(SandwichService.class);
   }
 
   @Bean
