@@ -1,13 +1,13 @@
 package be.pj.sandwichbot.slack.builders;
 
-import be.pj.sandwichbot.model.SlackUserModel;
+import be.pj.sandwichbot.model.SlackUser;
 
 public class SlackUserModelBuilder {
 
-  private SlackUserModel model;
+  private SlackUser model;
 
   public SlackUserModelBuilder(){
-    model = new SlackUserModel();
+    model = new SlackUser();
   }
 
   public SlackUserModelBuilder userId(String userId) {
@@ -28,7 +28,7 @@ public class SlackUserModelBuilder {
     return this;
   }
 
-  public SlackUserModel build() {
+  public SlackUser build() {
     return model;
   }
 }

@@ -1,6 +1,6 @@
 package be.pj.sandwichbot.services;
 
-import be.pj.sandwichbot.model.SlackUserModel;
+import be.pj.sandwichbot.model.SlackUser;
 import be.pj.sandwichbot.repositories.SlackUserRepository;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.request.users.UsersInfoRequest;
@@ -20,8 +20,8 @@ public class SlackUserService {
 
   private Slack slack = Slack.getInstance();
 
-  public SlackUserModel findUser(String userId) throws Exception{
-    SlackUserModel model = new SlackUserModel();
+  public SlackUser findUser(String userId) throws Exception{
+    SlackUser model = new SlackUser();
 
     if (!userRepository.exists(userId)) {
       UsersInfoRequest request = UsersInfoRequest.builder().token(slackToken).user(userId).build();

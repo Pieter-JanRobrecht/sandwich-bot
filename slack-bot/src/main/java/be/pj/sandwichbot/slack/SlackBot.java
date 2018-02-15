@@ -1,6 +1,6 @@
 package be.pj.sandwichbot.slack;
 
-import be.pj.sandwichbot.model.SlackUserModel;
+import be.pj.sandwichbot.model.SlackUser;
 import be.pj.sandwichbot.services.SandwichService;
 import be.pj.sandwichbot.services.SlackUserService;
 import me.ramswaroop.jbot.core.slack.Bot;
@@ -65,7 +65,7 @@ public class SlackBot extends Bot {
   public void onWantingToOrder(WebSocketSession session, Event event) throws Exception {
     logger.info("User " + event.getUserId() + " wants to order. Starting conversation.");
 
-    SlackUserModel model = userService.findUser(event.getUserId());
+    SlackUser model = userService.findUser(event.getUserId());
 
     if (!userMapping.containsKey(event.getUserId())) {
       userMapping.put(model.getUserId(), model.getName());

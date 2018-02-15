@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "slack_user")
-public class SlackUserModel {
+public class SlackUser {
 
   @Id
   private String userId;
