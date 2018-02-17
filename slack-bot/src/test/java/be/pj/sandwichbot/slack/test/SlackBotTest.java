@@ -8,9 +8,11 @@ import be.pj.sandwichbot.slack.SlackMessage;
 import be.pj.sandwichbot.slack.builders.SandwichBuilder;
 import be.pj.sandwichbot.slack.builders.SlackMessageBuilder;
 import be.pj.sandwichbot.slack.builders.SlackUserModelBuilder;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.rule.OutputCapture;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,11 +26,12 @@ import static org.mockito.Mockito.when;
 public class SlackBotTest extends AbstractBotTest {
 
   private static final Sandwich SANDWICH = new SandwichBuilder().simple().build();
+  private static String DEFAULT_USER = "UBADGH18S";
+  private static String RANDOM_USER = "UEADGH18S";
 
   @Rule
   public OutputCapture capture = new OutputCapture();
 
-  @Autowired
   private SlackBot slackBot;
 
   @Autowired
@@ -39,6 +42,12 @@ public class SlackBotTest extends AbstractBotTest {
 
   @Autowired
   private WebSocketSession session;
+
+  @Before
+  public void setUp() {
+    slackBot = new SlackBot();
+    Mockito.spy(slackBot);
+  }
 
   @Test
   public void ifAskingForListReturnEverything() throws Exception {
@@ -62,7 +71,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Asked user");
+    assertThat(capture.toString()).isNotNull().contains("Asked user " + DEFAULT_USER);
 
     SlackMessage slackMessage1 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -71,7 +80,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("sandwich");
+    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
 
     SlackMessage slackMessage2 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -80,7 +89,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage2.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("stopping conversation");
+    assertThat(capture.toString()).isNotNull().contains("Thanked " + DEFAULT_USER);
   }
 
   @Test
@@ -90,7 +99,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("Asked user");
+    assertThat(capture.toString()).isNotNull().contains("Asked user " + DEFAULT_USER);
 
     SlackMessage badMessage = new SlackMessageBuilder()
             .toRandomChannel()
@@ -99,7 +108,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, badMessage.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().doesNotContain("soup");
+    assertThat(capture.toString()).isNotNull().doesNotContain("Going to order soup");
 
     SlackMessage slackMessage1 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -108,7 +117,7 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage1.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("sandwich");
+    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
 
     SlackMessage slackMessage2 = new SlackMessageBuilder()
             .toRandomChannel()
@@ -117,7 +126,61 @@ public class SlackBotTest extends AbstractBotTest {
             .build();
 
     slackBot.handleTextMessage(session, slackMessage2.convertToTextMessage());
-    assertThat(capture.toString()).isNotNull().contains("stopping conversation");
+    assertThat(capture.toString()).isNotNull().contains("Thanked " + DEFAULT_USER);
+  }
+
+  @Test
+  public void conversationWithSomeoneStartingNewOrder() throws Exception {
+    SlackMessage userOne = new SlackMessageBuilder()
+            .directMentionSlackBot("order")
+            .build();
+
+    slackBot.handleTextMessage(session, userOne.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Asked user " + DEFAULT_USER);
+
+    SlackMessage userTwo = new SlackMessageBuilder()
+            .directMentionSlackBot("order")
+            .byRandomUser()
+            .build();
+
+    slackBot.handleTextMessage(session, userTwo.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Asked user " + RANDOM_USER);
+
+    SlackMessage orderMessageOne = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byRandomUser()
+            .payload("soup")
+            .build();
+
+    slackBot.handleTextMessage(session, orderMessageOne.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to order soup");
+
+    SlackMessage orderMessageTwo = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("sandwich")
+            .build();
+
+    slackBot.handleTextMessage(session, orderMessageTwo.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Going to order sandwich");
+
+    SlackMessage endMessageOne = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("thanks")
+            .build();
+
+    slackBot.handleTextMessage(session, endMessageOne.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Thanked " + DEFAULT_USER);
+
+    SlackMessage endMessageTwo = new SlackMessageBuilder()
+            .toRandomChannel()
+            .byDefaultUser()
+            .payload("thanks")
+            .build();
+
+    slackBot.handleTextMessage(session, endMessageTwo.convertToTextMessage());
+    assertThat(capture.toString()).isNotNull().contains("Thanked " + RANDOM_USER);
   }
 }
 
